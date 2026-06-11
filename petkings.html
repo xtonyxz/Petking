@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#1A6BFF" />
+  <title>PetKings – O Lar dos Seus Melhores Amigos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --blue: #1A6BFF;
+      --blue-dark: #0F4FCC;
+      --blue-light: #5A9FFF;
+      --blue-pale: #E8F1FF;
+      --yellow: #FFD93D;
+      --green: #4ECB71;
+      --pink: #FF6B9D;
+      --white: #FFFFFF;
+      --dark: #1A2035;
+      --gray: #6B7A99;
+      --light: #F4F8FF;
+      --radius: 20px;
+      --radius-sm: 12px;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --safe-left: env(safe-area-inset-left, 0px);
+      --safe-right: env(safe-area-inset-right, 0px);
+    }
+
+    *, *::before, *::after {
+      margin: 0; padding: 0; box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: var(--white); color: var(--dark);
+      overflow-x: hidden; -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: calc(12px + var(--safe-top)) 5% 12px;
+      background: rgba(255,255,255,.95);
+      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      box-shadow: 0 2px 20px rgba(26,107,255,.10);
+      animation: slideDown .55s ease;
+    }
+    @keyframes slideDown { from { transform: translateY(-110%); opacity:0; } to { transform: translateY(0); opacity:1; } }
+
+    .nav-logo {
+      font-family: 'Fredoka One', cursive; font-size: 1.65rem; color: var(--blue);
+      display: flex; align-items: center; gap: 6px;
+      text-decoration: none; flex-shrink: 0;
+    }
+    .nav-links { display: flex; gap: 24px; list-style: none; }
+    .nav-links a {
+      text-decoration: none; color: var(--dark);
+      font-weight: 700; font-size: .9rem; transition: color .2s;
+    }
+    .nav-links a:hover { color: var(--blue); }
+    .nav-right { display: flex; align-items: center; gap: 12px; }
+    .nav-cta {
+      background: var(--blue); color: #fff; border: none;
+      padding: 10px 20px; border-radius: 50px;
+      font-family: 'Nunito', sans-serif; font-weight: 800; font-size: .88rem;
+      cursor: pointer; transition: background .2s, transform .15s;
+      text-decoration: none; white-space: nowrap;
+      min-height: 44px; display: flex; align-items: center;
+    }
+    .nav-cta:hover { background: var(--blue-dark); transform: scale(1.04); }
+
+    /* Hambúrguer */
+    .hamburger {
+      display: none; flex-direction: column; justify-content: center; gap: 5px;
+      width: 44px; height: 44px; background: none; border: none; cursor: pointer;
+      padding: 8px; border-radius: 10px;
+    }
+    .hamburger span {
+      display: block; height: 2.5px; background: var(--dark);
+      border-radius: 4px; transition: transform .3s, opacity .3s;
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(7.5px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7.5px) rotate(-45deg); }
+
+    /* Mobile drawer */
+    .mobile-menu {
+      display: none; position: fixed; inset: 0; z-index: 190;
+      background: rgba(26,32,53,.55); backdrop-filter: blur(4px);
+      opacity: 0; pointer-events: none; transition: opacity .3s;
+    }
+    .mobile-menu.open { opacity: 1; pointer-events: all; }
+    .mobile-drawer {
+      position: absolute; top: 0; right: 0; bottom: 0; width: min(320px, 85vw);
+      background: #fff; padding: calc(80px + var(--safe-top)) 28px 32px;
+      display: flex; flex-direction: column; gap: 8px;
+      transform: translateX(100%); transition: transform .35s cubic-bezier(.4,0,.2,1);
+      box-shadow: -8px 0 40px rgba(26,107,255,.15);
+    }
+    .mobile-menu.open .mobile-drawer { transform: translateX(0); }
+    .mobile-drawer a {
+      display: flex; align-items: center; padding: 14px 16px;
+      font-weight: 700; font-size: 1rem; color: var(--dark);
+      text-decoration: none; border-radius: var(--radius-sm);
+      transition: background .2s, color .2s; min-height: 52px;
+    }
+    .mobile-drawer a:hover, .mobile-drawer a:active { background: var(--blue-pale); color: var(--blue); }
+    .mobile-drawer .drawer-cta {
+      margin-top: 16px; background: var(--blue); color: #fff !important;
+      justify-content: center; border-radius: var(--radius-sm);
+    }
+
+    /* ── HERO ── */
+    #hero {
+      min-height: 100svh;
+      background: linear-gradient(135deg, #1A6BFF 0%, #0F4FCC 55%, #5A9FFF 100%);
+      display: flex; align-items: center; justify-content: center;
+      padding: calc(80px + var(--safe-top)) 5% 80px;
+      position: relative; overflow: hidden;
+    }
+    .blob {
+      position: absolute; border-radius: 50%; opacity: .16; pointer-events: none;
+      animation: floatBlob 6s ease-in-out infinite alternate;
+    }
+    .blob-1 { width: 420px; height: 420px; background: #FFD93D; top: -100px; right: -80px; }
+    .blob-2 { width: 260px; height: 260px; background: #FF6B9D; bottom: -60px; left: -60px; animation-delay: 1.5s; }
+    .blob-3 { width: 160px; height: 160px; background: #fff; top: 38%; left: 26%; animation-delay: 3s; }
+    @keyframes floatBlob { from { transform: scale(1) translate(0,0); } to { transform: scale(1.14) translate(12px,-14px); } }
+
+    .hero-inner {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 40px; max-width: 1200px; width: 100%; position: relative; z-index: 2;
+    }
+    .hero-text { flex: 1; color: #fff; }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,.18); border: 1.5px solid rgba(255,255,255,.35);
+      border-radius: 50px; padding: 7px 16px; font-size: .85rem; font-weight: 700;
+      margin-bottom: 20px; backdrop-filter: blur(6px);
+      animation: fadeUp .7s ease .2s both;
+    }
+    .hero-title {
+      font-family: 'Fredoka One', cursive;
+      font-size: clamp(2.2rem, 6vw, 3.8rem);
+      line-height: 1.1; margin-bottom: 18px;
+      animation: fadeUp .7s ease .4s both;
+    }
+    .hero-title em { color: var(--yellow); font-style: normal; }
+    .hero-sub {
+      font-size: clamp(.95rem, 2.5vw, 1.1rem); font-weight: 600; opacity: .92;
+      max-width: 480px; line-height: 1.7; margin-bottom: 32px;
+      animation: fadeUp .7s ease .6s both;
+    }
+    .hero-btns {
+      display: flex; gap: 12px; flex-wrap: wrap;
+      animation: fadeUp .7s ease .8s both;
+    }
+    .btn-primary {
+      background: var(--yellow); color: var(--dark); border: none;
+      padding: 14px 26px; border-radius: 50px;
+      font-family: 'Nunito', sans-serif; font-weight: 800; font-size: .98rem;
+      cursor: pointer; transition: transform .2s, box-shadow .2s;
+      display: inline-flex; align-items: center; gap: 8px; text-decoration: none;
+      min-height: 52px;
+    }
+    .btn-primary:active { transform: scale(.97); }
+    .btn-ghost {
+      background: transparent; color: #fff;
+      border: 2px solid rgba(255,255,255,.6); padding: 14px 24px; border-radius: 50px;
+      font-family: 'Nunito', sans-serif; font-weight: 800; font-size: .98rem;
+      cursor: pointer; transition: background .2s; text-decoration: none;
+      min-height: 52px; display: inline-flex; align-items: center;
+    }
+    .btn-ghost:active { background: rgba(255,255,255,.15); }
+    @keyframes fadeUp { from { opacity:0; transform: translateY(22px); } to { opacity:1; transform: translateY(0); } }
+
+    .hero-art {
+      flex: 0 0 auto; width: 340px; height: 340px;
+      background: rgba(255,255,255,.13); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; font-size: 8rem;
+      box-shadow: 0 0 0 22px rgba(255,255,255,.06), 0 0 0 44px rgba(255,255,255,.03);
+      animation: fadeUp .9s ease .5s both, pulse 4s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.04); } }
+
+    .hero-stats {
+      position: absolute; bottom: -28px; left: 50%; transform: translateX(-50%);
+      display: flex; gap: 16px; z-index: 10;
+      animation: fadeUp .7s ease 1s both;
+      width: max-content; max-width: calc(100vw - 32px);
+    }
+    .stat-card {
+      background: #fff; border-radius: var(--radius-sm);
+      padding: 16px 22px; text-align: center;
+      box-shadow: 0 12px 40px rgba(26,107,255,.18); min-width: 100px;
+    }
+    .stat-num { font-family: 'Fredoka One', cursive; font-size: 1.8rem; color: var(--blue); }
+    .stat-label { font-size: .72rem; font-weight: 700; color: var(--gray); text-transform: uppercase; letter-spacing: .04em; }
+
+    /* ── SOBRE ── */
+    #sobre { padding: 110px 5% 72px; background: var(--white); }
+    .section-tag {
+      display: inline-block; background: var(--blue-pale); color: var(--blue);
+      font-weight: 800; font-size: .78rem; letter-spacing: .08em; text-transform: uppercase;
+      padding: 6px 14px; border-radius: 50px; margin-bottom: 12px;
+    }
+    .section-title {
+      font-family: 'Fredoka One', cursive;
+      font-size: clamp(1.7rem, 4vw, 2.7rem);
+      color: var(--dark); margin-bottom: 12px; line-height: 1.15;
+    }
+    .section-title em { color: var(--blue); font-style: normal; }
+    .sobre-inner {
+      display: flex; gap: 56px; align-items: center;
+      max-width: 1100px; margin: 0 auto;
+    }
+    .sobre-img {
+      flex: 0 0 auto; width: 300px; height: 300px;
+      background: linear-gradient(135deg, var(--blue-pale), #cce0ff);
+      border-radius: 40% 60% 60% 40% / 50% 50% 70% 30%;
+      display: flex; align-items: center; justify-content: center; font-size: 6.5rem;
+      animation: morph 8s ease-in-out infinite;
+    }
+    @keyframes morph {
+      0%,100% { border-radius: 40% 60% 60% 40% / 50% 50% 70% 30%; }
+      50%      { border-radius: 60% 40% 40% 60% / 30% 60% 40% 70%; }
+    }
+    .sobre-text { flex: 1; }
+    .sobre-text p { font-size: 1rem; color: var(--gray); line-height: 1.8; margin-bottom: 24px; }
+    .bullet-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+    .bullet-list li {
+      display: flex; align-items: flex-start; gap: 12px;
+      font-weight: 700; font-size: .96rem; color: var(--dark);
+    }
+    .bullet-list li .icon {
+      flex: 0 0 36px; height: 36px; border-radius: 10px;
+      background: var(--blue-pale); color: var(--blue);
+      display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
+    }
+
+    /* ── SERVIÇOS ── */
+    #servicos { padding: 72px 5%; background: var(--light); position: relative; overflow: hidden; }
+    #servicos::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+      background: linear-gradient(90deg, var(--blue), var(--blue-light), var(--yellow));
+    }
+    .section-header { text-align: center; margin-bottom: 48px; }
+    .section-header p { color: var(--gray); font-weight: 600; margin-top: 8px; font-size: .98rem; }
+    .servicos-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr));
+      gap: 20px; max-width: 1100px; margin: 0 auto;
+    }
+    .servico-card {
+      background: #fff; border-radius: var(--radius);
+      padding: 28px 20px; text-align: center;
+      box-shadow: 0 4px 20px rgba(26,107,255,.07);
+      transition: transform .25s, box-shadow .25s;
+      position: relative; overflow: hidden;
+    }
+    .servico-card:hover { transform: translateY(-5px); box-shadow: 0 14px 36px rgba(26,107,255,.15); }
+    .servico-card::after {
+      content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+      height: 4px; background: var(--blue); transform: scaleX(0); transform-origin: left;
+      transition: transform .3s;
+    }
+    .servico-card:hover::after { transform: scaleX(1); }
+    .servico-icon {
+      width: 68px; height: 68px; border-radius: 18px;
+      background: var(--blue-pale);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.9rem; margin: 0 auto 14px; transition: background .25s;
+    }
+    .servico-card:hover .servico-icon { background: var(--blue); }
+    .servico-card h3 { font-family: 'Fredoka One', cursive; font-size: 1.15rem; color: var(--dark); margin-bottom: 8px; }
+    .servico-card p { font-size: .85rem; color: var(--gray); line-height: 1.65; }
+    .servico-destaque .servico-icon { background: var(--yellow); }
+    .servico-destaque { border: 2px solid var(--yellow); }
+    .badge-destaque {
+      position: absolute; top: 12px; right: 12px;
+      background: var(--yellow); color: var(--dark);
+      font-size: .68rem; font-weight: 800; padding: 3px 10px; border-radius: 50px;
+    }
+
+    /* ── PRODUTOS ── */
+    #produtos { padding: 72px 5%; background: var(--white); }
+    .produtos-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(220px,1fr));
+      gap: 20px; max-width: 1100px; margin: 0 auto;
+    }
+    .produto-card {
+      border-radius: var(--radius); overflow: hidden;
+      box-shadow: 0 4px 20px rgba(26,107,255,.08);
+      transition: transform .25s, box-shadow .25s; background: #fff;
+    }
+    .produto-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(26,107,255,.15); }
+    .produto-img { height: 160px; display: flex; align-items: center; justify-content: center; font-size: 4.5rem; }
+    .bg-blue  { background: var(--blue-pale); }
+    .bg-yello { background: #FFF8D6; }
+    .bg-pink  { background: #FFE9F1; }
+    .bg-green { background: #E6FAF0; }
+    .produto-info { padding: 18px; }
+    .produto-info h3 { font-family: 'Fredoka One', cursive; font-size: 1.08rem; margin-bottom: 4px; }
+    .produto-info .desc { font-size: .82rem; color: var(--gray); margin-bottom: 12px; }
+    .produto-bottom { display: flex; align-items: center; justify-content: space-between; }
+    .preco { font-family: 'Fredoka One', cursive; font-size: 1.25rem; color: var(--blue); }
+    .btn-add {
+      background: var(--blue); color: #fff; border: none;
+      padding: 9px 16px; border-radius: 50px;
+      font-family: 'Nunito', sans-serif; font-weight: 800; font-size: .82rem;
+      cursor: pointer; transition: background .2s; min-height: 40px;
+    }
+    .btn-add:active { background: var(--blue-dark); }
+
+    /* ── DEPOIMENTOS ── */
+    #depoimentos {
+      padding: 72px 5%;
+      background: linear-gradient(135deg, #1A6BFF 0%, #0F4FCC 100%);
+    }
+    #depoimentos .section-title { color: #fff; }
+    #depoimentos .section-tag { background: rgba(255,255,255,.2); color: #fff; }
+    #depoimentos .section-header p { color: rgba(255,255,255,.8); }
+    .dep-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(270px,1fr));
+      gap: 20px; max-width: 1100px; margin: 0 auto;
+    }
+    .dep-card {
+      background: rgba(255,255,255,.12); border: 1.5px solid rgba(255,255,255,.2);
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      border-radius: var(--radius); padding: 26px;
+      transition: background .25s, transform .25s;
+    }
+    .dep-card:hover { background: rgba(255,255,255,.2); transform: translateY(-4px); }
+    .dep-stars { color: var(--yellow); font-size: 1.15rem; margin-bottom: 10px; letter-spacing: 2px; }
+    .dep-text { color: rgba(255,255,255,.92); font-size: .93rem; line-height: 1.75; margin-bottom: 18px; font-style: italic; }
+    .dep-author { display: flex; align-items: center; gap: 12px; }
+    .dep-avatar {
+      width: 44px; height: 44px; border-radius: 50%;
+      background: rgba(255,255,255,.25);
+      display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0;
+    }
+    .dep-name { color: #fff; font-weight: 800; font-size: .93rem; }
+    .dep-pet  { color: rgba(255,255,255,.7); font-size: .78rem; font-weight: 600; }
+
+    /* ── CTA ── */
+    #cta { padding: 72px 5%; background: var(--light); text-align: center; }
+    .cta-box {
+      max-width: 660px; margin: 0 auto;
+      background: #fff; border-radius: 28px; padding: 52px 44px;
+      box-shadow: 0 20px 60px rgba(26,107,255,.13);
+      position: relative; overflow: hidden;
+    }
+    .cta-box::before {
+      content: ''; position: absolute; top: -60px; right: -60px;
+      width: 200px; height: 200px; border-radius: 50%;
+      background: var(--blue-pale); opacity: .7;
+    }
+    .cta-box .emoji { font-size: 3.2rem; margin-bottom: 14px; display: block; }
+    .cta-box h2 { font-family: 'Fredoka One', cursive; font-size: clamp(1.5rem,4vw,2rem); margin-bottom: 12px; color: var(--dark); }
+    .cta-box p { color: var(--gray); font-size: .98rem; line-height: 1.7; margin-bottom: 28px; font-weight: 600; }
+    .btn-whatsapp {
+      background: #25D366; color: #fff; border: none;
+      padding: 16px 32px; border-radius: 50px;
+      font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 1rem;
+      cursor: pointer; display: inline-flex; align-items: center; gap: 10px;
+      transition: background .2s, transform .2s, box-shadow .2s;
+      text-decoration: none; min-height: 56px;
+    }
+    .btn-whatsapp:hover { background: #1EB85A; transform: translateY(-2px); box-shadow: 0 12px 32px rgba(37,211,102,.3); }
+    .btn-whatsapp:active { transform: scale(.97); }
+
+    /* Floating WhatsApp button */
+    .float-whatsapp {
+      display: none; position: fixed;
+      bottom: calc(24px + var(--safe-bottom));
+      right: calc(20px + var(--safe-right));
+      z-index: 300; width: 60px; height: 60px; border-radius: 50%;
+      background: #25D366; color: #fff;
+      align-items: center; justify-content: center;
+      box-shadow: 0 6px 24px rgba(37,211,102,.45);
+      text-decoration: none; font-size: 1.8rem;
+      animation: bounceFAB 2.5s ease-in-out infinite;
+    }
+    @keyframes bounceFAB { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+
+    /* ── LOCALIZAÇÃO ── */
+    #localizacao { padding: 72px 5%; background: var(--white); }
+    .loc-inner { display: flex; gap: 44px; align-items: flex-start; max-width: 1100px; margin: 0 auto; }
+    .loc-info { flex: 1; }
+    .loc-info > p { color: var(--gray); font-size: .98rem; line-height: 1.8; margin-bottom: 22px; font-weight: 600; }
+    .loc-items { display: flex; flex-direction: column; gap: 14px; margin-bottom: 26px; }
+    .loc-item { display: flex; align-items: flex-start; gap: 12px; font-size: .93rem; font-weight: 700; color: var(--dark); }
+    .loc-item .icon {
+      flex: 0 0 38px; height: 38px; border-radius: 11px;
+      background: var(--blue-pale); color: var(--blue);
+      display: flex; align-items: center; justify-content: center; font-size: 1rem;
+    }
+    .loc-item small { display: block; font-weight: 600; color: var(--gray); font-size: .8rem; margin-top: 2px; }
+    .map-box {
+      flex: 1; min-height: 300px; border-radius: var(--radius);
+      background: linear-gradient(135deg, var(--blue-pale), #cce0ff);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 5rem; box-shadow: 0 8px 30px rgba(26,107,255,.1);
+      position: relative; overflow: hidden;
+    }
+    .map-box::before {
+      content: 'MAPA INTERATIVO'; position: absolute; bottom: 14px;
+      left: 50%; transform: translateX(-50%);
+      background: var(--blue); color: #fff; font-size: .72rem; font-weight: 800;
+      padding: 5px 14px; border-radius: 50px; letter-spacing: .06em; white-space: nowrap;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--dark);
+      padding: 52px 5% calc(28px + var(--safe-bottom));
+      color: rgba(255,255,255,.72);
+    }
+    .footer-inner { display: flex; gap: 40px; flex-wrap: wrap; max-width: 1100px; margin: 0 auto 36px; }
+    .footer-brand { flex: 1 1 220px; }
+    .footer-brand .logo {
+      font-family: 'Fredoka One', cursive; font-size: 1.7rem; color: #fff;
+      display: flex; align-items: center; gap: 8px; margin-bottom: 10px;
+    }
+    .footer-brand p { font-size: .86rem; line-height: 1.75; }
+    .footer-col { flex: 1 1 130px; }
+    .footer-col h4 { color: #fff; font-weight: 800; font-size: .93rem; margin-bottom: 14px; }
+    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .footer-col ul li a {
+      text-decoration: none; color: rgba(255,255,255,.62);
+      font-size: .85rem; font-weight: 600; transition: color .2s;
+    }
+    .footer-col ul li a:hover { color: var(--yellow); }
+    .footer-bottom {
+      border-top: 1px solid rgba(255,255,255,.1); padding-top: 22px;
+      text-align: center; font-size: .8rem; max-width: 1100px; margin: 0 auto;
+    }
+    .footer-bottom span { color: var(--yellow); }
+
+    /* ── SCROLL REVEAL ── */
+    .reveal { opacity: 0; transform: translateY(28px); transition: opacity .6s ease, transform .6s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ════════════════════════════════════
+       BREAKPOINT: TABLET  ≤ 860px
+    ════════════════════════════════════ */
+    @media (max-width: 860px) {
+      .nav-links { display: none; }
+      .hamburger { display: flex; }
+      .mobile-menu { display: block; }
+      .float-whatsapp { display: flex; }
+
+      .hero-inner { flex-direction: column; text-align: center; gap: 24px; }
+      .hero-art { width: 200px; height: 200px; font-size: 5.5rem; }
+      .hero-btns { justify-content: center; }
+      .hero-sub { max-width: 100%; margin-left: auto; margin-right: auto; }
+      .hero-stats {
+        position: static; transform: none;
+        flex-wrap: wrap; justify-content: center;
+        margin-top: 36px; width: 100%;
+      }
+      #hero { padding-bottom: 52px; }
+      #sobre { padding-top: 72px; }
+
+      .sobre-inner { flex-direction: column; align-items: center; gap: 32px; }
+      .sobre-img { width: 200px; height: 200px; font-size: 5rem; }
+
+      .servicos-grid { grid-template-columns: repeat(2, 1fr); }
+
+      .loc-inner { flex-direction: column; }
+      .map-box { min-height: 220px; width: 100%; }
+
+      .cta-box { padding: 36px 28px; }
+      .btn-whatsapp { width: 100%; justify-content: center; }
+    }
+
+    /* ════════════════════════════════════
+       BREAKPOINT: MOBILE  ≤ 520px
+    ════════════════════════════════════ */
+    @media (max-width: 520px) {
+      nav { padding: calc(10px + var(--safe-top)) 4% 10px; }
+      .nav-logo { font-size: 1.4rem; }
+      .nav-cta { display: none; }
+
+      #hero { padding: calc(68px + var(--safe-top)) 4% 44px; min-height: 100svh; }
+      .hero-title { font-size: clamp(1.9rem, 8vw, 2.6rem); }
+      .hero-art { width: 155px; height: 155px; font-size: 4.2rem; }
+      .hero-badge { font-size: .78rem; padding: 6px 14px; }
+      .hero-btns { flex-direction: column; align-items: stretch; }
+      .btn-primary, .btn-ghost { justify-content: center; }
+
+      .stat-card { min-width: 82px; padding: 13px 14px; }
+      .stat-num { font-size: 1.5rem; }
+      .stat-label { font-size: .65rem; }
+
+      #sobre { padding: 60px 4% 56px; }
+      #servicos, #produtos, #depoimentos, #cta, #localizacao { padding: 52px 4%; }
+
+      .servicos-grid { grid-template-columns: 1fr; gap: 14px; }
+      .produtos-grid { grid-template-columns: 1fr; gap: 14px; }
+      .dep-grid { grid-template-columns: 1fr; }
+
+      .section-title { font-size: clamp(1.5rem, 6vw, 2rem); }
+
+      .cta-box { padding: 30px 18px; border-radius: 18px; }
+      .cta-box h2 { font-size: 1.35rem; }
+      .cta-box .emoji { font-size: 2.6rem; }
+
+      footer { padding: 40px 4% calc(20px + var(--safe-bottom)); }
+      .footer-inner { gap: 24px; }
+      .footer-brand { flex: 1 1 100%; }
+      .footer-col { flex: 1 1 140px; }
+
+      .float-whatsapp { width: 54px; height: 54px; font-size: 1.55rem; }
+    }
+
+    /* ════════════════════════════════════
+       BREAKPOINT: SMALL  ≤ 360px
+    ════════════════════════════════════ */
+    @media (max-width: 360px) {
+      .hero-title { font-size: 1.75rem; }
+      .hero-art { width: 130px; height: 130px; font-size: 3.6rem; }
+      .stat-card { min-width: 70px; padding: 10px 10px; }
+      .stat-num { font-size: 1.3rem; }
+      .stat-label { font-size: .6rem; }
+      .bullet-list li { font-size: .86rem; }
+      .servico-card { padding: 22px 16px; }
+      .cta-box { padding: 26px 14px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- FLOATING WHATSAPP -->
+<a class="float-whatsapp" href="https://wa.me/5511999999999" target="_blank" aria-label="Abrir WhatsApp">💬</a>
+
+<!-- MOBILE DRAWER -->
+<div class="mobile-menu" id="mobileMenu" role="dialog" aria-modal="true" aria-label="Menu de navegação">
+  <div class="mobile-drawer">
+    <a href="#sobre"        onclick="closeMenu()">🐾 Sobre Nós</a>
+    <a href="#servicos"     onclick="closeMenu()">✂️ Serviços</a>
+    <a href="#produtos"     onclick="closeMenu()">🛍️ Produtos</a>
+    <a href="#depoimentos"  onclick="closeMenu()">💬 Depoimentos</a>
+    <a href="#localizacao"  onclick="closeMenu()">📍 Localização</a>
+    <a class="drawer-cta"   href="https://wa.me/5511999999999" target="_blank">📲 Agendar pelo WhatsApp</a>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#" aria-label="PetKings">👑 PetKings</a>
+  <ul class="nav-links" aria-label="Navegação principal">
+    <li><a href="#sobre">Sobre</a></li>
+    <li><a href="#servicos">Serviços</a></li>
+    <li><a href="#produtos">Produtos</a></li>
+    <li><a href="#depoimentos">Depoimentos</a></li>
+    <li><a href="#localizacao">Localização</a></li>
+  </ul>
+  <div class="nav-right">
+    <a class="nav-cta" href="https://wa.me/5511999999999" target="_blank">📅 Agendar</a>
+    <button class="hamburger" id="hamburger" aria-label="Abrir menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+  <div class="hero-inner">
+    <div class="hero-text">
+      <div class="hero-badge">🐾 Bem-vindo ao reino dos pets!</div>
+      <h1 class="hero-title">Seu pet merece<br>tratamento de <em>realeza!</em> 👑</h1>
+      <p class="hero-sub">Na PetKings, cuidamos dos seus melhores amigos com todo amor, carinho e profissionalismo que eles merecem. Banho, tosa, veterinário e muito mais!</p>
+      <div class="hero-btns">
+        <a class="btn-primary" href="https://wa.me/5511999999999" target="_blank">📲 Agendar pelo WhatsApp</a>
+        <a class="btn-ghost" href="#servicos">Ver Serviços</a>
+      </div>
+    </div>
+    <div class="hero-art" aria-hidden="true">🐶</div>
+  </div>
+  <div class="hero-stats" aria-label="Estatísticas PetKings">
+    <div class="stat-card"><div class="stat-num">2k+</div><div class="stat-label">Pets Felizes</div></div>
+    <div class="stat-card"><div class="stat-num">8</div><div class="stat-label">Anos no Mercado</div></div>
+    <div class="stat-card"><div class="stat-num">98%</div><div class="stat-label">Satisfação</div></div>
+    <div class="stat-card"><div class="stat-num">12</div><div class="stat-label">Especialistas</div></div>
+  </div>
+</section>
+
+<!-- SOBRE -->
+<section id="sobre">
+  <div class="sobre-inner reveal">
+    <div class="sobre-img" aria-hidden="true">🐾</div>
+    <div class="sobre-text">
+      <div class="section-tag">Quem Somos</div>
+      <h2 class="section-title">Somos apaixonados por <em>animais</em> 💙</h2>
+      <p>Desde 2016, a PetKings cuida dos pets de Goiás com dedicação, estrutura de ponta e uma equipe que realmente ama o que faz. Aqui, cada visita é uma experiência especial para o seu bichinho!</p>
+      <ul class="bullet-list">
+        <li><span class="icon">✅</span> Equipe especializada e apaixonada por animais</li>
+        <li><span class="icon">🏠</span> Ambiente limpo, seguro e aconchegante</li>
+        <li><span class="icon">💉</span> Veterinários clínicos e especialistas no local</li>
+        <li><span class="icon">🛡️</span> Protocolos rígidos de higiene e bem-estar animal</li>
+        <li><span class="icon">📱</span> Atualizações em tempo real para os tutores</li>
+        <li><span class="icon">❤️</span> Tratamento individualizado e cheio de carinho</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- SERVIÇOS -->
+<section id="servicos">
+  <div class="section-header reveal">
+    <div class="section-tag">O Que Fazemos</div>
+    <h2 class="section-title">Nossos <em>Serviços</em> 🐾</h2>
+    <p>Tudo que o seu pet precisa em um só lugar!</p>
+  </div>
+  <div class="servicos-grid reveal">
+    <div class="servico-card">
+      <div class="servico-icon">🛁</div>
+      <h3>Banho Completo</h3>
+      <p>Banho especial com produtos premium, perfumados e hipoalergênicos. Seu pet sai cheiroso e feliz!</p>
+    </div>
+    <div class="servico-card">
+      <div class="servico-icon">✂️</div>
+      <h3>Tosa Artística</h3>
+      <p>Tosa tradicional ou artística feita com amor por tosadores experientes. Looks incríveis garantidos!</p>
+    </div>
+    <div class="servico-card">
+      <div class="servico-icon">🩺</div>
+      <h3>Consulta Veterinária</h3>
+      <p>Veterinários clínicos disponíveis para consultas, vacinas, exames e muito mais.</p>
+    </div>
+    <div class="servico-card">
+      <div class="servico-icon">💊</div>
+      <h3>Farmácia Pet</h3>
+      <p>Medicamentos, suplementos e produtos de saúde dos melhores fabricantes do mercado.</p>
+    </div>
+    <div class="servico-card servico-destaque">
+      <div class="badge-destaque">⭐ Especialidade</div>
+      <div class="servico-icon">👑</div>
+      <h3>Spa Real PetKings</h3>
+      <p>Nossa especialidade! Hidratação profunda, aromaterapia e massagem relaxante. Tratamento de realeza puro!</p>
+    </div>
+    <div class="servico-card">
+      <div class="servico-icon">🏨</div>
+      <h3>Hotel Pet</h3>
+      <p>Hospedagem segura e confortável para quando você viaja. Seu pet fica em ótimas mãos!</p>
+    </div>
+  </div>
+</section>
+
+<!-- PRODUTOS -->
+<section id="produtos">
+  <div class="section-header reveal">
+    <div class="section-tag">Loja</div>
+    <h2 class="section-title">Produtos em <em>Destaque</em> 🛍️</h2>
+    <p>Selecionamos o melhor para o seu companheiro!</p>
+  </div>
+  <div class="produtos-grid reveal">
+    <div class="produto-card">
+      <div class="produto-img bg-blue">🦮</div>
+      <div class="produto-info">
+        <h3>Coleira Premium</h3>
+        <div class="desc">Couro legítimo, super resistente e confortável para o pescoço do seu cão.</div>
+        <div class="produto-bottom"><span class="preco">R$ 79,90</span><button class="btn-add">+ Pedir</button></div>
+      </div>
+    </div>
+    <div class="produto-card">
+      <div class="produto-img bg-yello">🐱</div>
+      <div class="produto-info">
+        <h3>Arranhador Luxo</h3>
+        <div class="desc">Arranhador em sisal natural com casinhas e brinquedos integrados. Gatos amam!</div>
+        <div class="produto-bottom"><span class="preco">R$ 149,00</span><button class="btn-add">+ Pedir</button></div>
+      </div>
+    </div>
+    <div class="produto-card">
+      <div class="produto-img bg-pink">🛁</div>
+      <div class="produto-info">
+        <h3>Kit Banho Spa</h3>
+        <div class="desc">Shampoo, condicionador e perfume. A nossa linha exclusiva para pelagem brilhante!</div>
+        <div class="produto-bottom"><span class="preco">R$ 59,90</span><button class="btn-add">+ Pedir</button></div>
+      </div>
+    </div>
+    <div class="produto-card">
+      <div class="produto-img bg-green">🍖</div>
+      <div class="produto-info">
+        <h3>Ração Premium 15kg</h3>
+        <div class="desc">Nutrição completa e balanceada para cães adultos de todas as raças.</div>
+        <div class="produto-bottom"><span class="preco">R$ 219,00</span><button class="btn-add">+ Pedir</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DEPOIMENTOS -->
+<section id="depoimentos">
+  <div class="section-header reveal">
+    <div class="section-tag">Clientes Felizes</div>
+    <h2 class="section-title">O que dizem por aí 💬</h2>
+    <p>A felicidade deles é a nossa maior recompensa!</p>
+  </div>
+  <div class="dep-grid reveal">
+    <div class="dep-card">
+      <div class="dep-stars">★★★★★</div>
+      <p class="dep-text">"Levo minha Mel todo mês para o Spa Real e ela sempre volta transformada! O pessoal é super atencioso e a gente recebe foto durante o atendimento. Recomendo de olhos fechados!"</p>
+      <div class="dep-author">
+        <div class="dep-avatar">👩</div>
+        <div><div class="dep-name">Camila Rodrigues</div><div class="dep-pet">🐩 Tutora da Mel, Poodle</div></div>
+      </div>
+    </div>
+    <div class="dep-card">
+      <div class="dep-stars">★★★★★</div>
+      <p class="dep-text">"Meu cachorro é extremamente ansioso e nunca tinha conseguido dar banho nele em lugar nenhum. Na PetKings, o pessoal tem um jeitão especial. Ele ficou tranquilinho! Nota 10!"</p>
+      <div class="dep-author">
+        <div class="dep-avatar">👨</div>
+        <div><div class="dep-name">Rafael Mendes</div><div class="dep-pet">🐕 Tutor do Thor, Labrador</div></div>
+      </div>
+    </div>
+    <div class="dep-card">
+      <div class="dep-stars">★★★★★</div>
+      <p class="dep-text">"Minha gatinha estava com problema de pele e a veterinária foi incrível – explicou tudo com muito cuidado. Tratamento funcionou perfeitamente! Local muito limpo e organizado."</p>
+      <div class="dep-author">
+        <div class="dep-avatar">👩</div>
+        <div><div class="dep-name">Juliana Costa</div><div class="dep-pet">🐈 Tutora da Nina, Persa</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA WHATSAPP -->
+<section id="cta">
+  <div class="cta-box reveal">
+    <span class="emoji">📲</span>
+    <h2>Agende agora pelo WhatsApp!</h2>
+    <p>É super rápido e fácil! Fale com a gente agora mesmo e garanta o melhor horário para o seu bichinho. Atendemos de segunda a sábado das 8h às 18h.</p>
+    <a class="btn-whatsapp" href="https://wa.me/5511999999999" target="_blank">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      Falar no WhatsApp agora
+    </a>
+  </div>
+</section>
+
+<!-- LOCALIZAÇÃO -->
+<section id="localizacao">
+  <div class="section-header reveal" style="text-align:center;margin-bottom:44px;">
+    <div class="section-tag">Onde Estamos</div>
+    <h2 class="section-title">Venha nos <em>Visitar</em> 📍</h2>
+  </div>
+  <div class="loc-inner reveal">
+    <div class="loc-info">
+      <p>Estamos em um endereço super fácil de encontrar, com estacionamento gratuito e acesso para pets de todas as raças e tamanhos. Adoramos receber novos visitantes!</p>
+      <div class="loc-items">
+        <div class="loc-item">
+          <span class="icon">📍</span>
+          <div>Rua das Flores, 1234 – Centro<br><small>Valparaíso de Goiás – GO</small></div>
+        </div>
+        <div class="loc-item">
+          <span class="icon">📞</span>
+          <div>(62) 9 9999-0000<br><small>WhatsApp disponível</small></div>
+        </div>
+        <div class="loc-item">
+          <span class="icon">🕐</span>
+          <div>Segunda a Sexta: 8h às 18h<br><small>Sábado: 8h às 14h</small></div>
+        </div>
+        <div class="loc-item">
+          <span class="icon">🅿️</span>
+          <div>Estacionamento gratuito<br><small>Para clientes PetKings</small></div>
+        </div>
+      </div>
+      <a class="btn-primary" href="https://maps.google.com" target="_blank" style="display:inline-flex;">
+        🗺️ Abrir no Google Maps
+      </a>
+    </div>
+    <div class="map-box" aria-label="Localização no mapa">🗺️</div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="logo">👑 PetKings</div>
+      <p>Cuidando dos seus melhores amigos com amor, carinho e muita dedicação desde 2016.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Serviços</h4>
+      <ul>
+        <li><a href="#servicos">Banho &amp; Tosa</a></li>
+        <li><a href="#servicos">Veterinário</a></li>
+        <li><a href="#servicos">Spa Real</a></li>
+        <li><a href="#servicos">Hotel Pet</a></li>
+        <li><a href="#servicos">Farmácia</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Links</h4>
+      <ul>
+        <li><a href="#sobre">Sobre Nós</a></li>
+        <li><a href="#produtos">Produtos</a></li>
+        <li><a href="#depoimentos">Depoimentos</a></li>
+        <li><a href="#cta">Agendamento</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Redes Sociais</h4>
+      <ul>
+        <li><a href="#">📸 Instagram</a></li>
+        <li><a href="#">📘 Facebook</a></li>
+        <li><a href="#">▶️ YouTube</a></li>
+        <li><a href="#">🐦 Twitter</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    © 2025 PetKings – Feito com <span>❤️</span> para os seus pets. Todos os direitos reservados.
+  </div>
+</footer>
+
+<script>
+  /* ── HAMBURGER ── */
+  const hamburger = document.getElementById('hamburger');
+  const mobileMenu = document.getElementById('mobileMenu');
+
+  function openMenu() {
+    hamburger.classList.add('open');
+    hamburger.setAttribute('aria-expanded', 'true');
+    mobileMenu.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeMenu() {
+    hamburger.classList.remove('open');
+    hamburger.setAttribute('aria-expanded', 'false');
+    mobileMenu.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  hamburger.addEventListener('click', () => mobileMenu.classList.contains('open') ? closeMenu() : openMenu());
+  mobileMenu.addEventListener('click', (e) => { if (!e.target.closest('.mobile-drawer')) closeMenu(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMenu(); });
+
+  /* ── SCROLL REVEAL ── */
+  const reveals = document.querySelectorAll('.reveal');
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 70);
+        obs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.08 });
+  reveals.forEach(r => obs.observe(r));
+
+  /* ── NAV HIGHLIGHT ── */
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-links a');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => { if (window.scrollY >= s.offsetTop - 90) current = s.getAttribute('id'); });
+    navLinks.forEach(a => { a.style.color = a.getAttribute('href') === `#${current}` ? 'var(--blue)' : ''; });
+  }, { passive: true });
+
+  /* ── iOS 300ms delay fix ── */
+  document.addEventListener('touchstart', () => {}, { passive: true });
+</script>
+</body>
+</html>
